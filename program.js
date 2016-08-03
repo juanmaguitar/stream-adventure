@@ -1,19 +1,11 @@
-var through = require('through2');
-var split = require('split');
-var upperCaseOddProcess = through(writeUpperCaseOdd);
-var lineCount = 0;
+var concat = require('concat-stream');
+var reverseProcess = concat( reverseText );
 
-function writeUpperCaseOdd ( bufferLine , encoding, next) {
-	var strLine = bufferLine.toString();
-	this.push(lineCount % 2 === 0
-			? strLine.toLowerCase() + '\n'
-			: strLine.toUpperCase() + '\n'
-	);
-	lineCount ++;
-	next();
+function reverseText ( bufferFull ) {
+	var content = bufferFull.toString();
+	var reversedText = content.split('').reverse().join('');
+	console.log(reversedText);
 }
 
 process.stdin
-	.pipe( split() )
-	.pipe( upperCaseOddProcess )
-	.pipe( process.stdout );
+	.pipe( reverseProcess )
