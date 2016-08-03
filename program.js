@@ -1,6 +1,14 @@
-var request = require('request');
-var myPostRequest = request.post('http://localhost:8099');
+// Here's the reference solution:
 
-process.stdin
-	.pipe( myPostRequest )
-	.pipe( process.stdout );
+var ws = require('websocket-stream');
+var stream = ws('ws://localhost:8090');
+
+var button = document.getElementById("send");
+button.addEventListener("click", sendMessageToServer);
+
+function sendMessageToServer(e) {
+	e.preventDefault()
+	var messageInput = document.getElementById("msg");
+	stream.write(messageInput.value + '\n');
+	messageInput.value = "";
+}

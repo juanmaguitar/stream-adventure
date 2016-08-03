@@ -1,18 +1,11 @@
-var http = require('http');
+var WebSocketServer = require('ws').Server;
+var websocketStream = require('websocket-stream');
 
-http.createServer(function(request, response) {
-	if (request.method === 'POST') {
+var wss = new WebSocketServer({port: 8090});
+var fs = require('fs');
+var util = require('util');
 
-		request.on('data', function (data) {
-			response.write("request:" + data);
-		});
-
-		request.on('end', function (data) {
-			response.end();
-		});
-
-	}
-	else response.end("gimme POST!")
-}).listen(8099)
-
-// echo "hack the planet" | curl -d @- http://localhost:8099
+wss.on('connection', function connect(ws) {
+  var stream = websocketStream(ws);
+  stream.pipe(process.stdout);
+});
