@@ -1,14 +1,35 @@
-// Here's the reference solution:
+var Trumpet = require('trumpet'); //Trumpet's a Constructor function
+var through2 = require('through2')
 
-var ws = require('websocket-stream');
-var stream = ws('ws://localhost:8090');
+var trumpetMainStream = new Trumpet();
+var loudSecondaryStream = trumpetMainStream.select('.loud').createStream();
 
-var button = document.getElementById("send");
-button.addEventListener("click", sendMessageToServer);
+loudSecondaryStream
+  .pipe(through2( function(chunk, _, next) {
+    var modifiedElement =  chunk.toString().toUpperCase()
+    this.push(modifiedElement)
+    next()
+  }))
+  .pipe(loudSecondaryStream)
 
-function sendMessageToServer(e) {
-	e.preventDefault()
-	var messageInput = document.getElementById("msg");
-	stream.write(messageInput.value + '\n');
-	messageInput.value = "";
-}
+process.stdin
+  .pipe(trumpetMainStream)
+  .pipe(process.stdout);
+
+
+// var Trumpet = require('trumpet'); //Trumpet's a Constructor function
+
+// var trumpet = new Trumpet();
+// var loudHTMLDStream = trumpet.createStream('.loud');
+
+// loudHTMLDStream.on('data', function(data) {
+//   loudHTMLDStream.write( data.toString().toUpperCase() );
+// });
+
+// loudHTMLDStream.on('end', function(data) {
+//   loudHTMLDStream.end();
+// });
+
+// process.stdin
+//   .pipe(trumpet)
+//   .pipe(process.stdout);
